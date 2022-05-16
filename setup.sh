@@ -4,6 +4,7 @@
 if [ ${EUID:-${UID}} != 0 ]; then
     echo "This script must be run as root user"
     exit 1
+fi
 
 # change dir
 cd `dirname $0`
