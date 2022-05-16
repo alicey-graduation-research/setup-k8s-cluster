@@ -4,6 +4,8 @@
 if [ ${EUID:-${UID}} != 0 ]; then
     echo "This script must be run as root user"
     exit 1
+else
+    echo "script start ..."
 fi
 
 # change dir
