@@ -5,6 +5,9 @@ if [ ${EUID:-${UID}} != 0 ]; then
     echo "This script must be run as root user"
     exit 1
 
+# change dir
+cd `dirname $0`
+
 # iptablesがnftablesバックエンドを使用しないようにする
 apt-get update && \
     apt-get install -y iptables arptables ebtables
@@ -46,7 +49,7 @@ apt-get update && \
 
 ## setting containerd
 mkdir -p /etc/containerd
-containerd config default | sudo tee /etc/containerd/config.toml
+containerd config default | tee /etc/containerd/config.toml
 
 systemctl restart containerd
 
@@ -62,7 +65,7 @@ EOF
 
 apt-get update && \
     apt-get install -y kubelet kubeadm kubectl && \
-    sudo apt-mark hold kubelet kubeadm kubectl
+    apt-mark hold kubelet kubeadm kubectl
 
 KUBELET_EXTRA_ARGS=--cgroup-driver=/run/containerd/containerd.sock
 
