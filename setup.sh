@@ -11,6 +11,11 @@ fi
 # change dir
 cd `dirname $0`
 
+# swap off
+swapoff -a
+sed -i -e '/swap/d' /etc/fstab
+
+
 # iptablesがnftablesバックエンドを使用しないようにする
 apt-get update && \
     apt-get install -y iptables arptables ebtables
