@@ -58,10 +58,28 @@ apt-get update && \
 
 ## setting containerd
 mkdir -p /etc/containerd
-containerd config default | tee /etc/containerd/config.toml
+containerd config default | tee /etc/containerd/config.toml > /dev/null
+
+if grep -q "SystemdCgroup = true" "/etc/containerd/config.toml"; then
+    echo "Config found, skip rewriting..."
+else
+    sed -i -e "s/SystemdCgroup \= false/SystemdCgroup \= true/g" /etc/containerd/config.toml
+fi
 
 systemctl restart containerd
 
+# Modify kernel parameters for Kubernetes
+cat <<EOF | tee /etc/sysctl.d/k8s.conf
+net.bridge.bridge-nf-call-ip6tables = 1
+net.bridge.bridge-nf-call-iptables = 1
+vm.overcommit_memory = 1
+vm.panic_on_oom = 0
+kernel.panic = 10
+kernel.panic_on_oops = 1
+kernel.keys.root_maxkeys = 1000000
+kernel.keys.root_maxbytes = 25000000
+EOF
+sysctl --system
 
 # install component
 apt-get update && \
@@ -73,10 +91,15 @@ deb https://apt.kubernetes.io/ kubernetes-xenial main
 EOF
 
 apt-get update && \
-    apt-get install -y kubelet kubeadm kubectl && \
+    apt-get install -y kubelet=1.24.0-00 kubeadm=1.24.0-00 kubectl=1.24.0-00 && \
     apt-mark hold kubelet kubeadm kubectl
 
 KUBELET_EXTRA_ARGS=--cgroup-driver=/run/containerd/containerd.sock
+cat > /etc/crictl.yaml <<EOF
+runtime-endpoint: unix:///var/run/containerd/containerd.sock
+image-endpoint: unix:///var/run/containerd/containerd.sock
+timeout: 10
+EOF
 
 systemctl daemon-reload
 systemctl restart kubelet
