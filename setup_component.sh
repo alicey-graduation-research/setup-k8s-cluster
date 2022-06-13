@@ -91,7 +91,7 @@ deb https://apt.kubernetes.io/ kubernetes-xenial main
 EOF
 
 apt-get update && \
-    apt-get install -y kubelet=1.24.0-00 kubeadm=1.24.0-00 kubectl=1.24.0-00 && \
+    apt-get install -y kubelet=1.24.1-00 kubeadm=1.24.1-00 kubectl=1.24.1-00 && \
     apt-mark hold kubelet kubeadm kubectl
 
 KUBELET_EXTRA_ARGS=--cgroup-driver=/run/containerd/containerd.sock
@@ -104,10 +104,3 @@ EOF
 systemctl daemon-reload
 systemctl restart kubelet
 
-# コントロールプレーンの動作
-kubeadm init
-sleep 10
-mkdir -p $HOME/.kube
-cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-chown $(id -u):$(id -g) $HOME/.kube/config
-kubectl apply -f ./k8s-manifests/calico.yaml
