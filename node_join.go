@@ -18,10 +18,19 @@ func main(){
         fmt.Print(err.Error())
     }
 
-	// masterのIPアドレスを調べる
-
-
 	// masterにkubeadmにjoinするトークン要求
+	conn, err := net.Dial("udp4", "255.255.255.255:43210")
+	if err != nil {
+		panic(err)
+	}
+	defer conn.Close()
+
+	_, err = conn.Write([]byte("please-kubeadm-token"))
+	if err != nil {
+		panic(err)
+	}
+
+	// token受け取り
 	
 	// kubeadm joinする　
 	_, err := exec.Command("/usr/bin/","./setup_test.sh").Output()
