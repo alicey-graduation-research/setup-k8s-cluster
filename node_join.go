@@ -5,6 +5,8 @@ import(
 	"net"
 	"os/exec"
 	"os"
+	"io"
+	"log"
 )
 
 func main(){
@@ -31,11 +33,39 @@ func main(){
 	}
 
 	// token受け取り
+	log.SetOutput(io.MultiWriter(os.Stdout))
+	udpAddr := &net.UDPAddr{
+		IP:   net.ParseIP("0.0.0.0"),
+		Port: 32432,
+	}
+
+	udpConn, err := net.ListenUDP("udp", udpAddr)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	buf := make([]byte, 64)
+	log.Println("Starting UDP Server...")
+
+	for {
+		n, addr, err := udpConn.ReadFromUDP(buf)
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		go func() {
+			log.Printf("From: %v Reciving data: %s", addr.String(), string(buf[:n]))
+			fmt.Print(string(buf[:n]))
+		}()
+
+		localAddr := udpConn.LocalAddr().(*net.UDPAddr).String()
+		fmt.Println(localAddr)
+	}
 	
 	// kubeadm joinする　
-	_, err := exec.Command("/usr/bin/","./setup_test.sh").Output()
-    if err != nil {
-        fmt.Print(err.Error())
-    }
+	// _, err := exec.Command("/usr/bin/","./setup_test.sh").Output()
+    // if err != nil {
+    //     fmt.Print(err.Error())
+    // }
 
 }
