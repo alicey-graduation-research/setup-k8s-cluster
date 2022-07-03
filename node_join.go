@@ -17,7 +17,7 @@ func main(){
 	// nodeにK8sコンポーネントのインストール
 	_, err := exec.Command("/bin/sh","./setup_component.sh").Output()
     if err != nil {
-        fmt.Print(err.Error())
+        fmt.Println("K8s compornent install error:" + err.Error())
     }
 
 	// masterにkubeadmにjoinするトークン要求
@@ -55,7 +55,7 @@ func main(){
 
 		go func() {
 			log.Printf("From: %v Reciving data: %s", addr.String(), string(buf[:n]))
-			fmt.Print(string(buf[:n]))
+			fmt.Println(string(buf[:n]))
 		}()
 
 		localAddr := udpConn.LocalAddr().(*net.UDPAddr).String()
