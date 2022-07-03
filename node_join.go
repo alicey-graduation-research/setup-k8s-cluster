@@ -10,30 +10,34 @@ import(
 )
 
 func main(){
+	// logをファイル書き込み
+	// logfile, err := os.OpenFile("./udpServer.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	// if err != nil {
+	// 	println("cannot open logfile", err)
+	// }
+	// defer logfile.Close()
+	// log.SetOutput(io.MultiWriter(logfile, os.Stdout))
+	log.SetOutput(io.MultiWriter(os.Stdout))
 
-	os.Setenv("TEST","testenv")
+	// os.Setenv("TEST","testenv")
 	// fmt.Print(string(os.Getenv("TEST")))
 
 	// nodeにK8sコンポーネントのインストール
 	_, err := exec.Command("/bin/sh","./setup_component.sh").Output()
     if err != nil {
-        fmt.Println("K8s compornent install error:" + err.Error())
+        log.Fatalln("[ERROR]K8s compornent install:" + err.Error())
     }
 
 	// masterにkubeadmにjoinするトークン要求
 	conn, err := net.Dial("udp4", "255.255.255.255:43210")
 	if err != nil {
-		panic(err)
+		log.Fatalln("[ERROR]net.Dial: " + err)
 	}
 	defer conn.Close()
 
-	_, err = conn.Write([]byte("please-kubeadm-token"))
-	if err != nil {
-		panic(err)
-	}
+
 
 	// token受け取り
-	log.SetOutput(io.MultiWriter(os.Stdout))
 	udpAddr := &net.UDPAddr{
 		IP:   net.ParseIP("0.0.0.0"),
 		Port: 32432,
@@ -41,16 +45,16 @@ func main(){
 
 	udpConn, err := net.ListenUDP("udp", udpAddr)
 	if err != nil {
-		log.Fatalln(err)
+		log.Fatalln("[ERROR]net.ListenUDP: " + err)
 	}
 
 	buf := make([]byte, 64)
-	log.Println("Starting UDP Server...")
+	log.Println("[INFO]Starting UDP Server...")
 
 	for {
 		n, addr, err := udpConn.ReadFromUDP(buf)
 		if err != nil {
-			log.Fatalln(err)
+			log.Fatalln("[ERROR]udpConn.ReadFromUDP: " + err)
 		}
 
 		go func() {
@@ -65,7 +69,7 @@ func main(){
 	// kubeadm joinする　
 	// _, err := exec.Command("/usr/bin/","./setup_test.sh").Output()
     // if err != nil {
-    //     fmt.Print(err.Error())
+    //     log.Fatalln("[ERROR]exec.Command kubeadm join: " + err.Error())
     // }
 
 }
