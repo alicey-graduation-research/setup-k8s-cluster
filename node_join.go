@@ -3,7 +3,7 @@ package main
 import(
 	"fmt"
 	"net"
-	"os/exec"
+	//"os/exec"
 	"os"
 	"io"
 	"log"
@@ -24,11 +24,11 @@ func main(){
 	// fmt.Print(string(os.Getenv("TEST")))
 
 	// nodeにK8sコンポーネントのインストール
-	out, err := exec.Command("/bin/sh","./setup_component.sh").Output()
-    if err != nil {
-		log.Print("[ERROR]" + string(out))
-		log.Fatalln("[ERROR]K8s compornent install:" + err.Error())
-    }
+	// out, err := exec.Command("/bin/sh","./setup_component.sh").Output()
+    // if err != nil {
+	// 	log.Print("[ERROR]" + string(out))
+	// 	log.Fatalln("[ERROR]K8s compornent install:" + err.Error())
+    // }
 
 	// masterにkubeadmにjoinするトークン要求
 	conn, err := net.Dial("udp4", "255.255.255.255:43210")
