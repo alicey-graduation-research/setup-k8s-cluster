@@ -7,6 +7,7 @@ import(
 	"os"
 	"io"
 	"log"
+	"time"
 )
 
 func main(){
@@ -23,19 +24,18 @@ func main(){
 	// fmt.Print(string(os.Getenv("TEST")))
 
 	// nodeにK8sコンポーネントのインストール
-	_, err := exec.Command("/bin/sh","./setup_component.sh").Output()
+	out, err := exec.Command("/bin/sh","./setup_component.sh").Output()
     if err != nil {
-        log.Fatalln("[ERROR]K8s compornent install:" + err.Error())
+		log.Print("[ERROR]" + string(out))
+		log.Fatalln("[ERROR]K8s compornent install:" + err.Error())
     }
 
 	// masterにkubeadmにjoinするトークン要求
 	conn, err := net.Dial("udp4", "255.255.255.255:43210")
 	if err != nil {
-		log.Fatalln("[ERROR]net.Dial: " + err)
+		log.Fatalln("[ERROR]net.Dial: " + err.Error())
 	}
 	defer conn.Close()
-
-
 
 	// token受け取り
 	udpAddr := &net.UDPAddr{
@@ -45,25 +45,51 @@ func main(){
 
 	udpConn, err := net.ListenUDP("udp", udpAddr)
 	if err != nil {
-		log.Fatalln("[ERROR]net.ListenUDP: " + err)
+		log.Fatalln("[ERROR]net.ListenUDP: " + err.Error())
 	}
 
 	buf := make([]byte, 64)
 	log.Println("[INFO]Starting UDP Server...")
 
-	for {
-		n, addr, err := udpConn.ReadFromUDP(buf)
+	token_get_flag := false
+	for{
+		// control-planeにtokenを要求
+		_, err = conn.Write([]byte("please-kubeadm-token"))
 		if err != nil {
-			log.Fatalln("[ERROR]udpConn.ReadFromUDP: " + err)
+			log.Println("[INFO]please-kubeadm-token: " + err.Error())
 		}
 
-		go func() {
-			log.Printf("From: %v Reciving data: %s", addr.String(), string(buf[:n]))
-			fmt.Println(string(buf[:n]))
-		}()
+		start_time := time.Now()
+		for {
+			// UDPパケットを待機するループ
+			n, addr, err := udpConn.ReadFromUDP(buf)
+			if err != nil {
+				log.Println("[ERROR]udpConn.ReadFromUDP: " + err.Error())
+			}
 
-		localAddr := udpConn.LocalAddr().(*net.UDPAddr).String()
-		fmt.Println(localAddr)
+			go func() {
+				log.Println("From: %v Reciving data: %s", addr.String(), string(buf[:n]))
+				fmt.Println(string(buf[:n]))
+				token_get_flag = true
+			}()
+
+			//localAddr := udpConn.LocalAddr().(*net.UDPAddr).String()
+			//fmt.Println(localAddr)
+
+			if token_get_flag{
+				break
+			}
+
+			if time.Since(start_time).Milliseconds() > 1000{
+				log.Println("[ERROR]UDP packet wait: time out")
+				break
+			}
+		}
+
+		if token_get_flag {
+			log.Println("[INFO]token get")
+			break
+		}
 	}
 	
 	// kubeadm joinする　
