@@ -1,7 +1,7 @@
 package main
 
 import(
-	"fmt"
+	//"fmt"
 	"net"
 	//"os/exec"
 	"os"
@@ -71,16 +71,25 @@ func main(){
 			log.Println("[ERROR]udpConn.ReadFromUDP: " + err.Error())
 		}
 
+		ch := make(chan bool, 1)
 		go func() {
-			log.Println("From: %v Reciving data: %s", addr.String(), string(buf[:n]))
-			fmt.Println(string(buf[:n]))
-			
+			if addr != nil{
+				log.Println("resIP: " + addr.String())
+				// 内容の判定
+				s := string(buf[:n])
+				log.Println("From: %v Reciving data: %s", addr.String(), s)
+
+				token_get_flag = true
+				ch <- true
+			}
 		}()
 
-		//localAddr := udpConn.LocalAddr().(*net.UDPAddr).String()
-		//fmt.Println(localAddr)
-
-
+		select {
+		case <-ch:
+			log.Println("[INFO]goroutin done")
+		case <-time.After(50 * time.Millisecond):
+			log.Println("[ERROR]goroutine time out")
+		}
 
 		if token_get_flag {
 			log.Println("[INFO]token get")
