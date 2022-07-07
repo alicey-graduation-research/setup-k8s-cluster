@@ -30,14 +30,14 @@ func main(){
 	// 	log.Fatalln("[ERROR]K8s compornent install:" + err.Error())
     // }
 
-	// masterにkubeadmにjoinするトークン要求
+	// masterにkubeadmにjoinするトークン要求用の定義
 	conn, err := net.Dial("udp4", "255.255.255.255:43210")
 	if err != nil {
 		log.Fatalln("[ERROR]net.Dial: " + err.Error())
 	}
 	defer conn.Close()
 
-	// token受け取り
+	// token受け取り用の定義
 	udpAddr := &net.UDPAddr{
 		IP:   net.ParseIP("0.0.0.0"),
 		Port: 32432,
@@ -59,32 +59,28 @@ func main(){
 			log.Println("[INFO]please-kubeadm-token: " + err.Error())
 		}
 
-		start_time := time.Now()
-		for {
-			// UDPパケットを待機するループ
-			n, addr, err := udpConn.ReadFromUDP(buf)
-			if err != nil {
-				log.Println("[ERROR]udpConn.ReadFromUDP: " + err.Error())
-			}
-
-			go func() {
-				log.Println("From: %v Reciving data: %s", addr.String(), string(buf[:n]))
-				fmt.Println(string(buf[:n]))
-				token_get_flag = true
-			}()
-
-			//localAddr := udpConn.LocalAddr().(*net.UDPAddr).String()
-			//fmt.Println(localAddr)
-
-			if token_get_flag{
-				break
-			}
-
-			if time.Since(start_time).Milliseconds() > 1000{
-				log.Println("[ERROR]UDP packet wait: time out")
-				break
-			}
+		// UDPパケットを待機する
+		err = udpConn.SetReadDeadline(time.Now().Add(10 * time.Second)) // timeout 10 second
+		if err != nil {
+			log.Fatalln("[ERROR]udpConn: timeout setting error")
 		}
+
+		
+		n, addr, err := udpConn.ReadFromUDP(buf)
+		if err != nil {
+			log.Println("[ERROR]udpConn.ReadFromUDP: " + err.Error())
+		}
+
+		go func() {
+			log.Println("From: %v Reciving data: %s", addr.String(), string(buf[:n]))
+			fmt.Println(string(buf[:n]))
+			
+		}()
+
+		//localAddr := udpConn.LocalAddr().(*net.UDPAddr).String()
+		//fmt.Println(localAddr)
+
+
 
 		if token_get_flag {
 			log.Println("[INFO]token get")
