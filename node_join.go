@@ -1,16 +1,16 @@
 package main
 
-import(
+import (
 	//"fmt"
 	"net"
 	//"os/exec"
-	"os"
 	"io"
 	"log"
+	"os"
 	"time"
 )
 
-func main(){
+func main() {
 	// logをファイル書き込み
 	// logfile, err := os.OpenFile("./udpServer.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	// if err != nil {
@@ -25,10 +25,10 @@ func main(){
 
 	// nodeにK8sコンポーネントのインストール
 	// out, err := exec.Command("/bin/sh","./setup_component.sh").Output()
-    // if err != nil {
+	// if err != nil {
 	// 	log.Print("[ERROR]" + string(out))
 	// 	log.Fatalln("[ERROR]K8s compornent install:" + err.Error())
-    // }
+	// }
 
 	// masterにkubeadmにjoinするトークン要求用の定義
 	conn, err := net.Dial("udp4", "255.255.255.255:43210")
@@ -52,7 +52,7 @@ func main(){
 	log.Println("[INFO]Starting UDP Server...")
 
 	token_get_flag := false
-	for{
+	for {
 		// control-planeにtokenを要求
 		_, err = conn.Write([]byte("please-kubeadm-token"))
 		if err != nil {
@@ -65,7 +65,6 @@ func main(){
 			log.Fatalln("[ERROR]udpConn: timeout setting error")
 		}
 
-		
 		n, addr, err := udpConn.ReadFromUDP(buf)
 		if err != nil {
 			log.Println("[ERROR]udpConn.ReadFromUDP: " + err.Error())
@@ -73,7 +72,7 @@ func main(){
 
 		ch := make(chan bool, 1)
 		go func() {
-			if addr != nil{
+			if addr != nil {
 				log.Println("resIP: " + addr.String())
 				// 内容の判定
 				s := string(buf[:n])
@@ -84,6 +83,7 @@ func main(){
 			}
 		}()
 
+		// データ受け取りORタイムアウト時の処理
 		select {
 		case <-ch:
 			log.Println("[INFO]goroutin done")
@@ -96,11 +96,11 @@ func main(){
 			break
 		}
 	}
-	
-	// kubeadm joinする　
+
+	// kubeadm joinする
 	// _, err := exec.Command("/usr/bin/","./setup_test.sh").Output()
-    // if err != nil {
-    //     log.Fatalln("[ERROR]exec.Command kubeadm join: " + err.Error())
-    // }
+	// if err != nil {
+	//     log.Fatalln("[ERROR]exec.Command kubeadm join: " + err.Error())
+	// }
 
 }
