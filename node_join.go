@@ -52,7 +52,7 @@ func main() {
 	buf := make([]byte, 256)
 	log.Println("[INFO]Starting UDP Server...")
 
-	token_get_flag := false
+	var kubeadm_command string
 	for {
 		// control-planeにtokenを要求
 		_, err = conn.Write([]byte("please-kubeadm-token"))
@@ -111,9 +111,9 @@ func main() {
 				// 	log.Fatalln("[Error]return data: arg6(hash-data)")
 				// }
 
-				log.Println("Reciving data: ", s)
+				log.Println("[INFO]Reciving data: ", s)
 
-				token_get_flag = true
+				kubeadm_command = s
 				ch <- true
 			}
 		}()
@@ -126,12 +126,13 @@ func main() {
 			log.Println("[ERROR]goroutine time out")
 		}
 
-		if token_get_flag {
+		if kubeadm_command != "" {
 			log.Println("[INFO]token get")
 			break
 		}
 	}
 
+	//log.Println("[DEBUG] ", kubeadm_command)
 	// kubeadm joinする
 	// _, err := exec.Command("/usr/bin/","./setup_test.sh").Output()
 	// if err != nil {
