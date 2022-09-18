@@ -3,7 +3,7 @@ package main
 import (
 	//"fmt"
 	"net"
-	//"os/exec"
+	"os/exec"
 	"io"
 	"log"
 	"os"
@@ -134,9 +134,10 @@ func main() {
 
 	//log.Println("[DEBUG] ", kubeadm_command)
 	// kubeadm joinする
-	// _, err := exec.Command("/usr/bin/","./setup_test.sh").Output()
-	// if err != nil {
-	//     log.Fatalln("[ERROR]exec.Command kubeadm join: " + err.Error())
-	// }
+	l, err := exec.Command(kubeadm_command).Output()
+	if err != nil {
+	    log.Fatalln("[ERROR]exec.Command kubeadm join: " + err.Error())
+	}
+	log.Println("[INFO]kubeadm exec: ", l)
 
 }
