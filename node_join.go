@@ -8,6 +8,7 @@ import (
 	"log"
 	"os"
 	"time"
+	"strings"
 )
 
 func main() {
@@ -74,9 +75,41 @@ func main() {
 		go func() {
 			if addr != nil {
 				log.Println("resIP: " + addr.String())
-				// 内容の判定
+				// 内容の検証
 				s := string(buf[:n])
-				log.Println("From: %v Reciving data: %s", addr.String(), s)
+				v := strings.Split(s, " ")
+				//log.Println("From: %v Reciving data: %s", addr.String(), s)
+	
+				log.Println("[DEBUG] len(v):",len(v))
+				log.Println("[DEBUG] v:", v)
+				log.Println("[DEBUG] s:", s)
+
+				if len(v) != 7 {
+					log.Fatalln("[Error]return data: Different number of arguments")
+				}
+				if v[0] != "kubeadm"{
+					log.Fatalln("[Error]return data: arg0(kubeadm)")
+				}
+				if v[1] != "join"{
+					log.Fatalln("[Error]return data: arg1(join)")
+				}
+				if v[2] != addr.String(){
+					log.Fatalln("[Error]return data: arg２(ip-addr)")
+				}
+				if v[3] != "--token"{
+					log.Fatalln("[Error]return data: arg3(--token)")
+				}
+				// if v[4] != ""{
+				// 	log.Fatalln("[Error]return data: arg4(token-data)")
+				// }
+				if v[5] != "--discovery-token-ca-cert-hash"{
+					log.Fatalln("[Error]return data: arg5(--discovery-token-ca-cert-hash)")
+				}
+				// if v[6] != ""{
+				// 	log.Fatalln("[Error]return data: arg6(hash-data)")
+				// }
+
+				log.Println("Reciving data: ", s)
 
 				token_get_flag = true
 				ch <- true
