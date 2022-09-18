@@ -80,10 +80,10 @@ func main() {
 				v := strings.Split(s, " ")
 				//log.Println("From: %v Reciving data: %s", addr.String(), s)
 	
-				log.Println("[DEBUG] len(v):",len(v))
-				log.Println("[DEBUG] v:", v)
-				log.Println("[DEBUG] len(s):",len(s))
-				log.Println("[DEBUG] s:", s)
+				// log.Println("[DEBUG] len(v):",len(v))
+				// log.Println("[DEBUG] v:", v)
+				// log.Println("[DEBUG] len(s):",len(s))
+				// log.Println("[DEBUG] s:", s)
 
 				if len(v) != 7 {
 					log.Fatalln("[Error]return data: Different number of arguments")
@@ -94,9 +94,10 @@ func main() {
 				if v[1] != "join"{
 					log.Fatalln("[Error]return data: arg1(join)")
 				}
-				if v[2] != addr.String(){
-					log.Fatalln("[Error]return data: arg２(ip-addr)")
-				}
+				// if v[2] != strings.Contains(v[2], str(addr.IP)){
+				// 	//K8sコンテナで動かす場合、対応ホストIPとapi-serverが一致せず引っかかるかも
+				// 	log.Fatalln("[Error]return data: arg２(ip-addr)")
+				// }
 				if v[3] != "--token"{
 					log.Fatalln("[Error]return data: arg3(--token)")
 				}
