@@ -49,7 +49,7 @@ func main() {
 		log.Fatalln("[ERROR]net.ListenUDP: " + err.Error())
 	}
 
-	buf := make([]byte, 64)
+	buf := make([]byte, 256)
 	log.Println("[INFO]Starting UDP Server...")
 
 	token_get_flag := false
@@ -82,6 +82,7 @@ func main() {
 	
 				log.Println("[DEBUG] len(v):",len(v))
 				log.Println("[DEBUG] v:", v)
+				log.Println("[DEBUG] len(s):",len(s))
 				log.Println("[DEBUG] s:", s)
 
 				if len(v) != 7 {
