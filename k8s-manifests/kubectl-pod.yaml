@@ -13,3 +13,14 @@ spec:
     - tail
     - -f
     - /dev/null
+    volumeMounts:
+    - name: kubeconfig
+    mountPath: "/root/.kube/config"
+      readOnly: true
+      volumes:
+      - name: kubeconfig
+        configMap:
+          name: kubeconfig
+          items:
+          - key: "config"
+            path: "config"
