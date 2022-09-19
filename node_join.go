@@ -57,7 +57,7 @@ func main() {
 		// control-planeにtokenを要求
 		_, err = conn.Write([]byte("please-kubeadm-token"))
 		if err != nil {
-			log.Println("[INFO]please-kubeadm-token: " + err.Error())
+			log.Fatalln("[INFO]please-kubeadm-token: " + err.Error())
 		}
 
 		// UDPパケットを待機する
