@@ -5,6 +5,7 @@ metadata:
     app: kubectl
   name: kubectl-pod
 spec:
+  serviceAccount: admin
   containers:
   - name: kubectl
     image: alicey/kubectl:latest
