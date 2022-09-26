@@ -28,6 +28,7 @@ metadata:
   name: kubeadm-token-notificator-nodeport-service
   namespace: kube-system
 spec:
+  externalTrafficPolicy: Local
   selector:
     app: kubeadm-token-notificator
   ports:
