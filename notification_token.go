@@ -5,6 +5,9 @@ import (
 	"log"
 	"net"
 	"os"
+	//"os/exec"
+
+	"fmt"
 )
 
 func main() {
@@ -35,27 +38,30 @@ func main() {
 	for {
 		n, addr, err := udpConn.ReadFromUDP(buf)
 		if err != nil {
-			log.Fatalln(err)
+			log.Println(err)
 		}
 
 		go func() {
 			// log.Printf("From: %v Reciving data: %s", addr.String(), string(buf[:n]))
-			//log.Println("[INFO]receive: " + addr.String())
+			// log.Println("[INFO]receive: " + addr.String())
 			s := string(buf[:n])
-			//log.Println("[DEBUG]",s)
+			// log.Println("[DEBUG]",s)
 
-			if s == "please-kubeadm-token"{
+			if s == "please-kubeadm-token" {
 				log.Println("[INFO] get token request: ", addr.IP)
 				kubeadm_command, err := exec.Command("kubeadm token create --print-join-command").Output()
 				if err != nil {
 					log.Println("[ERROR]exec.Command kubeadm token create: " + err.Error())
-					//break
+					return
 				}
+				// kubeadm_command := "echo aaa"
 
-				sendConn, err := net.Dial("udp4", addr.IP.String+":32432")
+				// log.Println("[DEBUG]IP-base",  fmt.Sprintf("%s", addr.IP) )
+				// log.Println("[DEBUG]IP-str", fmt.Sprintf("%s", addr.IP)+":32432")
+				sendConn, err := net.Dial("udp4", fmt.Sprintf("%s", addr.IP)+":32432")
 				if err != nil {
 					log.Println("[ERROR]net.Dial: " + err.Error())
-					//break
+					return
 				}
 				defer sendConn.Close()
 
@@ -63,7 +69,7 @@ func main() {
 				_, err = sendConn.Write([]byte(kubeadm_command))
 				if err != nil {
 					log.Println("[ERROR]send token: " + err.Error())
-					//break
+					return
 				}
 
 			}
