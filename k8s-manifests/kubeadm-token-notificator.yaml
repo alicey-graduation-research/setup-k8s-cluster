@@ -10,6 +10,10 @@ spec:
   containers:
   - name: kubeadm-token-notificator
     image: alicey/kubeadm-token-notificator:latest
+    command:
+    - tail
+    - -f
+    - /dev/null
     volumeMounts:
     - name: kubeconfig
       mountPath: "/root/.kube"
