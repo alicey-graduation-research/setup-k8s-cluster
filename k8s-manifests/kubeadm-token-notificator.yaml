@@ -21,3 +21,16 @@ spec:
         items:
         - key: "config"
           path: "config"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kubeadm-token-notificator-nodeport-service
+  namespace: kube-system
+spec:
+  selector:
+    app: kubeadm-token-notificator
+  ports:
+    - port: 43210
+      nodePort: 43210
+  type: NodePort
