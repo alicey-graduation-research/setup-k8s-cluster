@@ -2,13 +2,13 @@ package main
 
 import (
 	//"fmt"
-	"net"
-	"os/exec"
 	"io"
 	"log"
+	"net"
 	"os"
-	"time"
+	"os/exec"
 	"strings"
+	"time"
 )
 
 func main() {
@@ -79,7 +79,7 @@ func main() {
 				s := string(buf[:n])
 				v := strings.Split(s, " ")
 				//log.Println("From: %v Reciving data: %s", addr.String(), s)
-	
+
 				// log.Println("[DEBUG] len(v):",len(v))
 				// log.Println("[DEBUG] v:", v)
 				// log.Println("[DEBUG] len(s):",len(s))
@@ -88,23 +88,23 @@ func main() {
 				if len(v) != 7 {
 					log.Fatalln("[Error]return data: Different number of arguments")
 				}
-				if v[0] != "kubeadm"{
+				if v[0] != "kubeadm" {
 					log.Fatalln("[Error]return data: arg0(kubeadm)")
 				}
-				if v[1] != "join"{
+				if v[1] != "join" {
 					log.Fatalln("[Error]return data: arg1(join)")
 				}
 				// if v[2] != strings.Contains(v[2], str(addr.IP)){
 				// 	//K8sコンテナで動かす場合、対応ホストIPとapi-serverが一致せず引っかかるかも
 				// 	log.Fatalln("[Error]return data: arg２(ip-addr)")
 				// }
-				if v[3] != "--token"{
+				if v[3] != "--token" {
 					log.Fatalln("[Error]return data: arg3(--token)")
 				}
 				// if v[4] != ""{
 				// 	log.Fatalln("[Error]return data: arg4(token-data)")
 				// }
-				if v[5] != "--discovery-token-ca-cert-hash"{
+				if v[5] != "--discovery-token-ca-cert-hash" {
 					log.Fatalln("[Error]return data: arg5(--discovery-token-ca-cert-hash)")
 				}
 				// if v[6] != ""{
@@ -136,7 +136,7 @@ func main() {
 	// kubeadm joinする
 	l, err := exec.Command(kubeadm_command).Output()
 	if err != nil {
-	    log.Fatalln("[ERROR]exec.Command kubeadm join: " + err.Error())
+		log.Fatalln("[ERROR]exec.Command kubeadm join: " + err.Error())
 	}
 	log.Println("[INFO]kubeadm exec: ", l)
 
