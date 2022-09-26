@@ -11,6 +11,7 @@ RUN apt-get update \
 
 WORKDIR /opt/app
 ADD notification_token ./app
+RUN chmod u+x ./app
 
 ENTRYPOINT ["/opt/app/app"]
 CMD [""]
