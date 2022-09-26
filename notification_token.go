@@ -1,13 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"io"
 	"log"
 	"net"
 	"os"
-	//"os/exec"
-
-	"fmt"
+	"os/exec"
 )
 
 func main() {
