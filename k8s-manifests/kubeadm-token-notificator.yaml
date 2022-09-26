@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: kubeadm-token-notificator
+  name: kubeadm-token-notificator
+  namespace: kube-system
+spec:
+  #serviceAccount: admin
+  containers:
+  - name: kubeadm-token-notificator
+    image: alicey/kubeadm-token-notificator:latest
+    volumeMounts:
+    - name: kubeconfig
+      mountPath: "/root/.kube"
+      readOnly: true
+  volumes:
+    - name: kubeconfig
+      configMap:
+        name: kubeconfig
+        items:
+        - key: "config"
+          path: "config"
