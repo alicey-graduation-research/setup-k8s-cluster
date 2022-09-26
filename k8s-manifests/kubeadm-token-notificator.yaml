@@ -31,6 +31,7 @@ spec:
   selector:
     app: kubeadm-token-notificator
   ports:
-    - port: 32765
+    - protocol: UDP
+      port: 32765
       nodePort: 32765
   type: NodePort
