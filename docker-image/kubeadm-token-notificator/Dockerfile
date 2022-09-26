@@ -1,3 +1,10 @@
+# go-builder
+FROM golang:1.19.1-buster AS go-builder
+WORKDIR /opt/app
+COPY ../../notification_token.go ./app.go
+RUN go build app.go 
+
+# running-image
 FROM ubuntu:20.04
 
 RUN apt-get update \
@@ -10,7 +17,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /opt/app
-ADD notification_token ./app
+COPY --from=go-builder /opt/app/app ./app
 RUN chmod u+x ./app
 
 ENTRYPOINT ["/opt/app/app"]
