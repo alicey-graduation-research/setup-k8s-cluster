@@ -1,7 +1,7 @@
 # go-builder
 FROM golang:1.19.1-buster AS go-builder
 WORKDIR /opt/app
-COPY ../../notification_token.go ./app.go
+COPY ./notification_token.go ./app.go
 RUN go build app.go 
 
 # running-image
