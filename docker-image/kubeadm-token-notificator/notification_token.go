@@ -23,7 +23,7 @@ func main() {
 	// UDP Server
 	udpAddr := &net.UDPAddr{
 		IP:   net.ParseIP("0.0.0.0"),
-		Port: 43210,
+		Port: 32765,
 	}
 
 	udpConn, err := net.ListenUDP("udp", udpAddr)

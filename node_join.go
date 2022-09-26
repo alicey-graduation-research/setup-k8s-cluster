@@ -32,7 +32,7 @@ func main() {
 	// }
 
 	// masterにkubeadmにjoinするトークン要求用の定義
-	conn, err := net.Dial("udp4", "255.255.255.255:43210")
+	conn, err := net.Dial("udp4", "255.255.255.255:32765")
 	if err != nil {
 		log.Fatalln("[ERROR]net.Dial: " + err.Error())
 	}
