@@ -32,7 +32,7 @@ func main() {
 	// }
 
 	// masterにkubeadmにjoinするトークン要求用の定義
-	conn, err := net.Dial("udp4", "172.10.200.14:32765")
+	conn, err := net.Dial("udp4", "255.255.255.255:32765")
 	if err != nil {
 		log.Fatalln("[ERROR]net.Dial: " + err.Error())
 	}
@@ -96,7 +96,7 @@ func main() {
 				}
 				// if v[2] != strings.Contains(v[2], str(addr.IP)){
 				// 	//K8sコンテナで動かす場合、対応ホストIPとapi-serverが一致せず引っかかるかも
-				// 	log.Fatalln("[Error]return data: arg２(ip-addr)")
+				// 	log.Fatalln("[Error]return data: arg2(ip-addr)")
 				// }
 				if v[3] != "--token" {
 					log.Fatalln("[Error]return data: arg3(--token)")
