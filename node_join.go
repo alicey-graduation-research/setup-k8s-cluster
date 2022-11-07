@@ -37,8 +37,7 @@ func main(){
 }
 
 func cluster_status_check(){
-	cmd := "/usr/bin/curl --cacert /etc/kubernetes/pki/ca.crt https://" + api_server + ":6443/version"
-	r, err := exec.Command(cmd).Output()
+	r, err := exec.Command("/usr/bin/curl","--cacert","/etc/kubernetes/pki/ca.crt","https://" + api_server + ":6443/version").Output()
 	if err != nil {
 		log.Fatalln("[ERROR]exec.Command curl: " + err.Error())
 	}
