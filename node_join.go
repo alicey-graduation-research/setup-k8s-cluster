@@ -29,6 +29,7 @@ func main(){
 
 	port = "32432"
 	api_server = "127.0.0.1"
+	api_server = "172.10.200.14"
 	token_server_port = "32765"
 
 	cluster_status_check()
@@ -37,7 +38,9 @@ func main(){
 }
 
 func cluster_status_check(){
-	r, err := exec.Command("/usr/bin/curl","--cacert","/etc/kubernetes/pki/ca.crt","https://" + api_server + ":6443/version").Output()
+	cmd := "'/usr/bin/curl --cacert /etc/kubernetes/pki/ca.crt https://" + api_server + ":6443/version'"
+	// r, err := exec.Command("/usr/bin/curl","--cacert","/etc/kubernetes/pki/ca.crt","https://" + api_server + ":6443/version").Output()
+	r, err := exec.Command("/bin/sh","-c ",cmd).Output()
 	if err != nil {
 		log.Fatalln("[ERROR]exec.Command curl: " + err.Error())
 	}
