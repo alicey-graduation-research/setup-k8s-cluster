@@ -16,6 +16,7 @@ kubectl apply -f ./k8s-manifests/calico.yaml
 
 
 # setup token-notificator
+mkdir -p /opt/k8s-token-notificator/
 cp ./kubeadm-token-notificator/$(dpkg --print-architecture)_notification_token.o /opt/k8s-token-notificator/notification_token.o
 chmod u+x /opt/k8s-token-notificator/notification_token.o
 

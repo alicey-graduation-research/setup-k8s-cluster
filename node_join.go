@@ -9,9 +9,15 @@ import (
 	"os/exec"
 	"strings"
 	"time"
+	"strconv"
 )
 
-func main() {
+var port string
+var api_server string
+var token_server_port string
+//諸々の設定は環境変数から読み込みたい
+
+func main(){
 	// logをファイル書き込み
 	// logfile, err := os.OpenFile("./udpServer.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	// if err != nil {
@@ -21,6 +27,25 @@ func main() {
 	// log.SetOutput(io.MultiWriter(logfile, os.Stdout))
 	log.SetOutput(io.MultiWriter(os.Stdout))
 
+	port = "32432"
+	api_server = "127.0.0.1"
+	token_server_port = "32765"
+
+	cluster_status_check()
+	//cluster_join(log)
+	time.Sleep(time.Second * 60) 
+}
+
+func cluster_status_check(){
+	cmd := "/usr/bin/curl --cacert /etc/kubernetes/pki/ca.crt https://" + api_server + ":6443/version"
+	r, err := exec.Command(cmd).Output()
+	if err != nil {
+		log.Fatalln("[ERROR]exec.Command curl: " + err.Error())
+	}
+	log.Println("[INFO]curl exec: ", r)
+}
+
+func cluster_join() {
 	// os.Setenv("TEST","testenv")
 	// fmt.Print(string(os.Getenv("TEST")))
 
@@ -32,16 +57,17 @@ func main() {
 	// }
 
 	// masterにkubeadmにjoinするトークン要求用の定義
-	conn, err := net.Dial("udp4", "255.255.255.255:32765")
+	conn, err := net.Dial("udp4", "255.255.255.255:" + token_server_port)
 	if err != nil {
 		log.Fatalln("[ERROR]net.Dial: " + err.Error())
 	}
 	defer conn.Close()
 
 	// token受け取り用の定義
+	p, _ := strconv.Atoi(port)
 	udpAddr := &net.UDPAddr{
 		IP:   net.ParseIP("0.0.0.0"),
-		Port: 32432,
+		Port: p,
 	}
 
 	udpConn, err := net.ListenUDP("udp", udpAddr)
@@ -134,10 +160,10 @@ func main() {
 
 	//log.Println("[DEBUG] ", kubeadm_command)
 	// kubeadm joinする
-	l, err := exec.Command(kubeadm_command).Output()
+	r, err := exec.Command(kubeadm_command).Output()
 	if err != nil {
 		log.Fatalln("[ERROR]exec.Command kubeadm join: " + err.Error())
 	}
-	log.Println("[INFO]kubeadm exec: ", l)
+	log.Println("[INFO]kubeadm exec: ", r)
 
 }
