@@ -48,7 +48,7 @@ func main() {
 
 			if s == "please-kubeadm-token" {
 				log.Println("[INFO] get token request: ", addr.IP)
-				kubeadm_command, err := exec.Command("kubeadm token create --print-join-command").Output()
+				kubeadm_command, err := exec.Command("kubeadm", "token", "create", "--print-join-command").Output()
 				if err != nil {
 					log.Println("[ERROR]exec.Command kubeadm token create: " + err.Error())
 					return
