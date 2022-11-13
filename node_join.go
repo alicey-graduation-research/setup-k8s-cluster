@@ -16,6 +16,7 @@ import (
 var port string
 var api_server string
 var token_server_port string
+var cluster_destruction bool
 var new_comer bool
 
 func main() {
@@ -36,7 +37,7 @@ func main() {
 	cluster_destruction = true
 	new_comer = false
 
-	fail_counter = 0
+	fail_counter := 0
 
 	for {
 		cluster_check_res, err := cluster_status_check()
@@ -47,7 +48,7 @@ func main() {
 		}
 		// 新規参加時の挙動
 		if new_comer == true {
-			err := cluster_join()
+			err = cluster_join()
 			if err != nil {
 				log.Println("[ERROR] cluster join:", err.Error())
 				fail_counter++
@@ -61,7 +62,7 @@ func main() {
 		if cluster_check_res == true {
 			//クラスタ壊したり再構築したり
 			if cluster_destruction {
-				err := cluster_destroy()
+				err = cluster_destroy()
 				if err != nil {
 					log.Println("[ERROR]Cluster Destroy: " + err.Error())
 					fail_counter++
@@ -84,7 +85,6 @@ func main() {
 			log.Println("[ERROR_INFO] process fail count:", fail_counter)
 		} else if fail_counter > 100 {
 			//Fatallnにするか迷う
-			log.Fallen()
 			log.Println("[ERROR] Critical error, Please Check the connection to the cluster.", fail_counter)
 		}
 
@@ -168,6 +168,7 @@ func cluster_join() error {
 	log.Println("[INFO]Starting UDP Server...")
 
 	var kubeadm_command string
+	var response_validate_flag bool
 	for {
 		// control-planeにtokenを要求
 		_, err = conn.Write([]byte("please-kubeadm-token"))
@@ -186,6 +187,7 @@ func cluster_join() error {
 		n, addr, err := udpConn.ReadFromUDP(buf)
 		if err != nil {
 			log.Println("[ERROR]udpConn.ReadFromUDP: " + err.Error())
+			return err
 		}
 
 		ch := make(chan bool, 1)
@@ -237,16 +239,15 @@ func cluster_join() error {
 				// 	log.Println("[Error]return data: arg6(hash-data)")
 				//  response_validate_flag = true
 				// }
-				if response_validate_flag {
-					return errors.New("response validate error")
-				}
-
 				log.Println("[INFO]Reciving data: ", s)
 
 				kubeadm_command = s
 				ch <- true
 			}
 		}()
+		if response_validate_flag != false{
+			return errors.New("response validate error")
+		}
 
 		// データ受け取りORタイムアウト時の処理
 		select {
