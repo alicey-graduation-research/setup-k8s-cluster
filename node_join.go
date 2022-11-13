@@ -264,7 +264,7 @@ func cluster_join() error {
 
 	//log.Println("[DEBUG] ", kubeadm_command)
 	// kubeadm joinする
-	r, err := exec.Command(kubeadm_command).Output()
+	r, err := exec.Command("sh", "-c", kubeadm_command).Output()
 	if err != nil {
 		log.Println("[ERROR]exec.Command kubeadm join: " + err.Error())
 		return err
