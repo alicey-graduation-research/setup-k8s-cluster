@@ -42,9 +42,8 @@ func main() {
 	for {
 		cluster_check_res, err := cluster_status_check()
 		if err != nil {
-			log.Println("[ERROR] cluster_check:", err.Error())
-			fail_counter++
-			continue
+			//未構築で証明書がない場合などもここに入る
+			log.Println("[INFO] cluster_check:", err.Error())
 		}
 		// 新規参加時の挙動
 		if new_comer == true {
