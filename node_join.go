@@ -219,7 +219,7 @@ func cluster_join() error {
 					log.Println("[Error]return data: arg1(join)")
 					response_validate_flag = true
 				}
-				if !check_regexp(`^((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])$`, v[2]) {
+				if !check_regexp(`^((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9]):([0-9]|[1-9][0-9]{1,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$`, v[2]) {
 					log.Println("[Error]return data: arg2(ip-addr)")
 					response_validate_flag = true
 				}
@@ -227,7 +227,7 @@ func cluster_join() error {
 					log.Println("[Error]return data: arg3(--token)")
 					response_validate_flag = true
 				}
-				if !check_regexp(`^[a-zA-Z.]{23}&`, v[4]) {
+				if !check_regexp(`^[a-zA-Z0-9.]{23}$`, v[4]) {
 					log.Println("[Error]return data: arg4(token-data)")
 					response_validate_flag = true
 				}
@@ -235,7 +235,7 @@ func cluster_join() error {
 					log.Println("[Error]return data: arg5(--discovery-token-ca-cert-hash)")
 					response_validate_flag = true
 				}
-				if !check_regexp(`[a-zA-Z]{64}`, v[6]) {
+				if !check_regexp(`^sha256:[a-zA-Z0-9]{64}$`, v[6]) {
 					log.Println("[Error]return data: arg6(hash-data)")
 					response_validate_flag = true
 				}
