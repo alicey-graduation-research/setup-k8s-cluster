@@ -8,6 +8,7 @@ import (
 	"net"
 	"os"
 	"os/exec"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -53,6 +54,7 @@ func main() {
 				fail_counter++
 				continue
 			}
+			new_comer = false
 			fail_counter = 0
 			continue
 		}
@@ -217,34 +219,33 @@ func cluster_join() error {
 					log.Println("[Error]return data: arg1(join)")
 					response_validate_flag = true
 				}
-				// if v[2] != strings.Contains(v[2], str(addr.IP)){
-				// 	//K8sコンテナで動かす場合、対応ホストIPとapi-serverが一致せず引っかかるかも
-				// 	log.Println("[Error]return data: arg2(ip-addr)")
-				//  response_validate_flag = true
-				// }
+				if !check_regexp(`^((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])$`, v[2]) {
+					log.Println("[Error]return data: arg2(ip-addr)")
+					response_validate_flag = true
+				}
 				if v[3] != "--token" {
 					log.Println("[Error]return data: arg3(--token)")
 					response_validate_flag = true
 				}
-				// if v[4] != ""{
-				// 	log.Println("[Error]return data: arg4(token-data)")
-				//  response_validate_flag = true
-				// }
+				if !check_regexp(`^[a-zA-Z.]{23}&`, v[4]) {
+					log.Println("[Error]return data: arg4(token-data)")
+					response_validate_flag = true
+				}
 				if v[5] != "--discovery-token-ca-cert-hash" {
 					log.Println("[Error]return data: arg5(--discovery-token-ca-cert-hash)")
 					response_validate_flag = true
 				}
-				// if v[6] != ""{
-				// 	log.Println("[Error]return data: arg6(hash-data)")
-				//  response_validate_flag = true
-				// }
+				if !check_regexp(`[a-zA-Z]{64}`, v[6]) {
+					log.Println("[Error]return data: arg6(hash-data)")
+					response_validate_flag = true
+				}
 				log.Println("[INFO]Reciving data: ", s)
 
 				kubeadm_command = s
 				ch <- true
 			}
 		}()
-		if response_validate_flag != false{
+		if response_validate_flag != false {
 			return errors.New("response validate error")
 		}
 
@@ -273,4 +274,8 @@ func cluster_join() error {
 
 	time.Sleep(time.Second * 120)
 	return nil
+}
+
+func check_regexp(reg string, str string) bool {
+	return regexp.MustCompile(reg).Match([]byte(str))
 }
