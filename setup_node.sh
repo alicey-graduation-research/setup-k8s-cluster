@@ -14,7 +14,7 @@ sudo tee /etc/systemd/system/k8s-session-observer.service <<EOF
 Description=k8s-session-observer
 After=network-online.target
 [Service]
-ExecStart=/opt/k8s-session-observer/notification_token.o
+ExecStart=/opt/k8s-session-observer/k8s-session-observer.o
 WorkingDirectory=/opt/k8s-session-observer/
 Restart=always
 User=$(id -u -n)
