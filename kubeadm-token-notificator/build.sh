@@ -5,5 +5,5 @@ set -e
 cd `dirname $0`
 
 
-GOOS=linux GOARCH=amd64 go build -o ./amd64_notification.token.o notification_token.go
-GOOS=linux GOARCH=arm64 go build -o ./arm64_notification.token.o notification_token.go
+GOOS=linux GOARCH=amd64 go build -o ./amd64_notification_token.o notification_token.go
+GOOS=linux GOARCH=arm64 go build -o ./arm64_notification_token.o notification_token.go
