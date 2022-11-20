@@ -33,7 +33,6 @@ func main() {
 	//諸々の設定は環境変数から読み込みたい
 	port = "32432"
 	api_server = "127.0.0.1"
-	api_server = "172.10.200.14"
 	token_server_port = "32765"
 	cluster_destruction = true
 	new_comer = false
@@ -271,6 +270,11 @@ func cluster_join() error {
 		return err
 	}
 	log.Println("[INFO]kubeadm exec: ", r)
+
+	// IPAddressを一時記憶
+	ip_rex := regexp.MustCompile(`((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])`)
+	api_server = ip_rex.FindString(kubeadm_command)
+	log.Println("[INFO] update api-server ip address. :", api_server)
 
 	time.Sleep(time.Second * 120)
 	return nil
