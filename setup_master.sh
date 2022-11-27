@@ -11,6 +11,8 @@ mkdir -p $HOME/.kube
 cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 chown $(id -u):$(id -g) $HOME/.kube/config
 
+kubectl taint nodes --all node-role.kubernetes.io/master-
+kubectl taint nodes --all node-role.kubernetes.io/control-plane
 kubectl apply -f ./k8s-manifests/admin-clusterrolebinding.yaml
 kubectl apply -f ./k8s-manifests/calico.yaml
 
